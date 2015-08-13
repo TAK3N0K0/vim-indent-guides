@@ -199,6 +199,7 @@ function! indent_guides#init_script_vars()
   let s:color_hex_bg_pat  = g:indent_guides_color_hex_guibg_pattern
   let s:color_name_bg_pat = g:indent_guides_color_name_guibg_pattern
   let s:start_level       = g:indent_guides_start_level
+  let s:right_align       = g:indent_guides_right_align
 
   " str2float not available in vim versions <= 7.1
   if has('float')
@@ -264,9 +265,14 @@ endfunction
 " Example: indent_guides#indent_highlight_pattern('\t', 9, 2)
 " Returns: /^\t*\%9v\zs\t*\%11v\ze/
 "
-function! indent_guides#indent_highlight_pattern(indent_pattern, column_start, indent_size)
-  let l:pattern  = '^' . a:indent_pattern . '*\%' . a:column_start . 'v\zs'
-  let l:pattern .= a:indent_pattern . '*\%' . (a:column_start + a:indent_size) . 'v'
+function! indent_guides#indent_highlight_pattern(indent_pattern, column_start, guide_size)
+  if s:right_align
+    let l:highlight_start = a:column_start + s:indent_size - a:guide_size
+  else
+    let l:highlight_start = a:column_start
+  end
+  let l:pattern  = '^' . a:indent_pattern . '*\%' . (l:highlight_start) . 'v\zs'
+  let l:pattern .= a:indent_pattern . '*\%' . (l:highlight_start + a:guide_size) . 'v'
   let l:pattern .= '\ze'
   return l:pattern
 endfunction
